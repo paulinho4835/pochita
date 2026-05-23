@@ -1,0 +1,141 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProductCard from '../components/ProductCard.astro';
+import { getCollection } from 'astro:content';
+import { CIUDAD, WHATSAPP_BASE_URL } from '../config';
+
+const allProducts = await getCollection('productos');
+const destacados = allProducts.filter(p => p.data.destacado).slice(0, 6);
+const waUrl = `${WHATSAPP_BASE_URL}?text=${encodeURIComponent('Hola Pochita3D! Quiero hacer una consulta.')}`;
+---
+
+<BaseLayout title="Inicio">
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container hero-inner">
+      <div class="hero-text">
+        <p class="hero-eyebrow">🐾 Impresiones 3D desde {CIUDAD}</p>
+        <h1>Piezas únicas,<br /><span>hechas con cariño</span></h1>
+        <p class="hero-sub">Soportes, organizadores, decoración y más. Pedidos personalizados bajo tu diseño. Todo impreso en casa, con amor y con Pochita al lado.</p>
+        <div class="hero-actions">
+          <a href="/catalogo" class="btn btn-primary">Ver catálogo completo</a>
+          <a href={waUrl} target="_blank" rel="noopener" class="btn btn-whatsapp">💬 WhatsApp</a>
+        </div>
+      </div>
+      <div class="hero-image">
+        <div class="hero-placeholder">🐾<br /><span>Pochita3D</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DESTACADOS -->
+  {destacados.length > 0 && (
+    <section class="featured">
+      <div class="container">
+        <div class="section-header">
+          <h2>Productos destacados</h2>
+          <a href="/catalogo" class="btn btn-outline">Ver todos →</a>
+        </div>
+        <div class="products-grid">
+          {destacados.map(p => (
+            <ProductCard
+              slug={p.id}
+              nombre={p.data.nombre}
+              precio={p.data.precio}
+              material={p.data.material}
+              imagen={p.data.imagen}
+              disponibilidad={p.data.disponibilidad}
+              tiempoFabricacion={p.data.tiempoFabricacion}
+              mensajeWhatsApp={p.data.mensajeWhatsApp}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- CÓMO FUNCIONA -->
+  <section class="how-it-works">
+    <div class="container">
+      <h2 style="text-align:center;margin-bottom:2.5rem">¿Cómo hacer un pedido?</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-icon">💬</div>
+          <h3>1. Consultá</h3>
+          <p>Escribinos por WhatsApp o Messenger con lo que necesitás. Te respondemos rápido.</p>
+        </div>
+        <div class="step">
+          <div class="step-icon">✅</div>
+          <h3>2. Confirmamos</h3>
+          <p>Acordamos color, tamaño, material y precio. Sin sorpresas.</p>
+        </div>
+        <div class="step">
+          <div class="step-icon">🖨️</div>
+          <h3>3. Imprimimos</h3>
+          <p>Fabricamos tu pieza con cariño. Te avisamos cuando esté lista.</p>
+        </div>
+        <div class="step">
+          <div class="step-icon">📦</div>
+          <h3>4. Entregamos</h3>
+          <p>Coordinamos entrega o envío según tu ubicación en Bolivia.</p>
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:2rem">
+        <a href="/pedidos" class="btn btn-outline">Ver detalles del proceso →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA FINAL -->
+  <section class="cta-banner">
+    <div class="container">
+      <h2>¿Tenés un diseño en mente?</h2>
+      <p>Hacemos pedidos personalizados. Traé tu idea y lo imprimimos.</p>
+      <a href={waUrl} target="_blank" rel="noopener" class="btn btn-whatsapp">💬 Escribinos por WhatsApp</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero { background: var(--cream-dark); border-bottom: 1px solid var(--border); padding: 4rem 0; }
+  .hero-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }
+  .hero-eyebrow { color: var(--terracotta); font-weight: 600; font-size: 0.9rem; margin-bottom: 0.75rem; }
+  .hero-text h1 { margin-bottom: 1rem; }
+  .hero-text h1 span { color: var(--terracotta); }
+  .hero-sub { color: var(--text-muted); line-height: 1.7; max-width: 480px; margin-bottom: 1.75rem; }
+  .hero-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+  .hero-image { display: flex; align-items: center; justify-content: center; }
+  .hero-placeholder {
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: var(--border);
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    color: var(--text-muted);
+    gap: 0.5rem;
+  }
+  .hero-placeholder span { font-size: 1rem; font-weight: 600; }
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.75rem; gap: 1rem; }
+  .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.5rem; }
+  .how-it-works { background: var(--cream-dark); }
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+  .step { text-align: center; }
+  .step-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+  .step h3 { margin-bottom: 0.5rem; }
+  .step p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; }
+  .cta-banner { background: var(--terracotta); color: var(--white); text-align: center; }
+  .cta-banner h2 { color: var(--white); margin-bottom: 0.75rem; }
+  .cta-banner p { color: rgba(255,255,255,0.85); margin-bottom: 1.5rem; }
+  .cta-banner .btn-whatsapp { font-size: 1rem; padding: 0.85rem 1.75rem; }
+  @media (max-width: 900px) { .steps { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 768px) {
+    .hero-inner { grid-template-columns: 1fr; }
+    .hero-image { display: none; }
+    .steps { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 480px) { .steps { grid-template-columns: 1fr; } }
+</style>

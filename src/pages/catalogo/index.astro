@@ -1,0 +1,102 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import { getCollection } from 'astro:content';
+
+const allProducts = await getCollection('productos');
+const categorias = ['Todos', ...new Set(allProducts.map(p => p.data.categoria))];
+---
+
+<BaseLayout title="Catálogo" description="Explorá nuestro catálogo de impresiones 3D. Soportes, decoración, organización y más.">
+  <section class="catalogo-header">
+    <div class="container">
+      <h1>Catálogo</h1>
+      <p>Todas nuestras piezas disponibles. ¿No encontrás lo que buscás? <a href="/pedidos">Hacé tu pedido personalizado.</a></p>
+    </div>
+  </section>
+
+  <section class="catalogo-body">
+    <div class="container">
+      <div class="filters" role="group" aria-label="Filtrar por categoría">
+        {categorias.map(cat => (
+          <button class={`filter-btn ${cat === 'Todos' ? 'active' : ''}`} data-filter={cat}>
+            {cat}
+          </button>
+        ))}
+      </div>
+
+      <div class="products-grid" id="products-grid">
+        {allProducts.map(product => (
+          <div class="product-wrapper" data-categoria={product.data.categoria}>
+            <ProductCard
+              slug={product.id}
+              nombre={product.data.nombre}
+              precio={product.data.precio}
+              material={product.data.material}
+              imagen={product.data.imagen}
+              disponibilidad={product.data.disponibilidad}
+              tiempoFabricacion={product.data.tiempoFabricacion}
+              mensajeWhatsApp={product.data.mensajeWhatsApp}
+            />
+          </div>
+        ))}
+      </div>
+
+      {allProducts.length === 0 && (
+        <p class="empty">Pronto habrá productos disponibles. <a href="/contacto">Contactanos</a> para consultas.</p>
+      )}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .catalogo-header {
+    background: var(--cream-dark);
+    border-bottom: 1px solid var(--border);
+    padding: 2.5rem 0 2rem;
+  }
+  .catalogo-header h1 { margin-bottom: 0.5rem; }
+  .catalogo-header p { color: var(--text-muted); max-width: 560px; }
+  .filters {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+  .filter-btn {
+    padding: 0.45rem 1rem;
+    border-radius: 20px;
+    border: 2px solid var(--border);
+    background: var(--white);
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .filter-btn:hover { border-color: var(--terracotta); color: var(--terracotta); }
+  .filter-btn.active { background: var(--terracotta); border-color: var(--terracotta); color: var(--white); }
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.5rem;
+  }
+  .product-wrapper.hidden { display: none; }
+  .empty { color: var(--text-muted); text-align: center; padding: 3rem 0; }
+</style>
+
+<script>
+  const btns = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
+  const items = document.querySelectorAll<HTMLElement>('.product-wrapper');
+
+  btns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      btns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const filter = btn.dataset.filter;
+      items.forEach(item => {
+        item.classList.toggle('hidden', filter !== 'Todos' && item.dataset.categoria !== filter);
+      });
+    });
+  });
+</script>

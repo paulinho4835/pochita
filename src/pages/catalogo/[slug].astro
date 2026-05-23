@@ -1,0 +1,131 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
+import { WHATSAPP_BASE_URL } from '../../config';
+
+export async function getStaticPaths() {
+  const productos = await getCollection('productos');
+  return productos.map(p => ({ params: { slug: p.id }, props: { producto: p } }));
+}
+
+const { producto } = Astro.props;
+const { Content } = await render(producto);
+const d = producto.data;
+
+const waMsg = d.mensajeWhatsApp ?? `Hola Pochita3D! Me interesa el ${d.nombre} (Bs. ${d.precio}). ¿Está disponible?`;
+const waUrl = `${WHATSAPP_BASE_URL}?text=${encodeURIComponent(waMsg)}`;
+const badgeClass = d.disponibilidad === 'Stock disponible' ? 'badge-stock' : 'badge-pedido';
+---
+
+<BaseLayout title={d.nombre} description={d.descripcion} image={d.imagen}>
+  <div class="container">
+    <nav class="breadcrumb">
+      <a href="/">Inicio</a> / <a href="/catalogo">Catálogo</a> / <span>{d.nombre}</span>
+    </nav>
+
+    <div class="product-detail">
+      <div class="product-gallery">
+        <img src={d.imagen} alt={d.nombre} class="main-image" />
+        {d.imagenes && d.imagenes.length > 0 && (
+          <div class="thumbnails">
+            {[d.imagen, ...d.imagenes].map((img, i) => (
+              <img src={img} alt={`${d.nombre} vista ${i + 1}`} class={`thumb ${i === 0 ? 'active' : ''}`} data-src={img} />
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div class="product-info">
+        <p class="product-category">{d.categoria}</p>
+        <h1>{d.nombre}</h1>
+        <div class="product-price">Bs. {d.precio}</div>
+        <p class="product-desc">{d.descripcion}</p>
+
+        <div class="product-specs">
+          <div class="spec"><span class="spec-label">📦 Material</span><span>{d.material}</span></div>
+          <div class="spec"><span class="spec-label">📐 Dimensiones</span><span>{d.dimensiones}</span></div>
+          <div class="spec"><span class="spec-label">⏱ Fabricación</span><span>{d.tiempoFabricacion}</span></div>
+          <div class="spec"><span class="spec-label">🎨 Colores</span><span>{d.colores}</span></div>
+          <div class="spec">
+            <span class="spec-label">✅ Disponibilidad</span>
+            <span class={`badge ${badgeClass}`}>{d.disponibilidad}</span>
+          </div>
+        </div>
+
+        <div class="product-actions">
+          <a href={waUrl} target="_blank" rel="noopener" class="btn btn-whatsapp">
+            💬 Consultar por WhatsApp
+          </a>
+          <a href="/pedidos" class="btn btn-outline">Ver cómo hacer un pedido</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-content">
+      <Content />
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .breadcrumb {
+    padding: 1.25rem 0 0;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+  .breadcrumb a { color: var(--text-muted); }
+  .breadcrumb a:hover { color: var(--terracotta); }
+  .product-detail {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    padding: 2rem 0;
+    align-items: start;
+  }
+  .main-image {
+    width: 100%;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+  }
+  .thumbnails { display: flex; gap: 0.5rem; margin-top: 0.75rem; flex-wrap: wrap; }
+  .thumb {
+    width: 72px;
+    height: 72px;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    border: 2px solid var(--border);
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .thumb.active, .thumb:hover { border-color: var(--terracotta); }
+  .product-category { color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.4rem; }
+  .product-info h1 { margin-bottom: 0.5rem; font-size: 1.8rem; }
+  .product-price { font-size: 2rem; font-weight: 800; color: var(--terracotta); margin-bottom: 1rem; }
+  .product-desc { color: var(--text-muted); line-height: 1.7; margin-bottom: 1.5rem; }
+  .product-specs { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1.5rem; }
+  .spec { display: flex; align-items: center; gap: 0.75rem; font-size: 0.9rem; }
+  .spec-label { color: var(--text-muted); min-width: 130px; font-size: 0.85rem; }
+  .product-actions { display: flex; flex-direction: column; gap: 0.75rem; }
+  .product-actions .btn { justify-content: center; padding: 0.85rem; font-size: 1rem; }
+  .product-content { border-top: 1px solid var(--border); padding: 2rem 0; max-width: 680px; line-height: 1.8; }
+  .product-content :global(h2), .product-content :global(h3) { margin: 1.5rem 0 0.5rem; }
+  .product-content :global(ul) { padding-left: 1.5rem; }
+  .product-content :global(li) { margin-bottom: 0.3rem; }
+  @media (max-width: 768px) {
+    .product-detail { grid-template-columns: 1fr; gap: 1.5rem; }
+  }
+</style>
+
+<script>
+  const mainImg = document.querySelector<HTMLImageElement>('.main-image');
+  const thumbs = document.querySelectorAll<HTMLImageElement>('.thumb');
+  thumbs.forEach(thumb => {
+    thumb.addEventListener('click', () => {
+      if (mainImg && thumb.dataset.src) mainImg.src = thumb.dataset.src;
+      thumbs.forEach(t => t.classList.remove('active'));
+      thumb.classList.add('active');
+    });
+  });
+</script>

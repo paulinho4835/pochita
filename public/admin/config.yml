@@ -1,0 +1,44 @@
+backend:
+  name: git-gateway
+  branch: main
+
+locale: es
+
+media_folder: public/images/productos
+public_folder: /images/productos
+
+collections:
+  - name: productos
+    label: Productos
+    label_singular: Producto
+    folder: src/content/productos
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: Nombre, name: nombre, widget: string }
+      - { label: "Precio (Bs.)", name: precio, widget: number, value_type: int }
+      - label: Material
+        name: material
+        widget: select
+        options: [PLA, PETG, TPU, Otro]
+      - { label: Dimensiones, name: dimensiones, widget: string, hint: "Ej: 12 × 8 × 6 cm" }
+      - { label: Tiempo de fabricación, name: tiempoFabricacion, widget: string, hint: "Ej: 4–6 horas" }
+      - { label: Colores disponibles, name: colores, widget: string, hint: "Ej: Negro, blanco, rojo" }
+      - label: Disponibilidad
+        name: disponibilidad
+        widget: select
+        options: ["Stock disponible", "Bajo pedido"]
+      - label: Categoría
+        name: categoria
+        widget: select
+        options: [Organización, Decoración, Gaming, Hogar, Otro]
+      - { label: Descripción breve, name: descripcion, widget: text }
+      - { label: Destacado en inicio, name: destacado, widget: boolean, default: false }
+      - { label: Imagen principal, name: imagen, widget: image }
+      - label: Imágenes adicionales
+        name: imagenes
+        widget: list
+        required: false
+        field: { label: Imagen, name: imagen, widget: image }
+      - { label: Mensaje WhatsApp, name: mensajeWhatsApp, widget: string, required: false, hint: "Ej: Hola! Me interesa el organizador..." }
+      - { label: Descripción larga (opcional), name: body, widget: markdown, required: false }

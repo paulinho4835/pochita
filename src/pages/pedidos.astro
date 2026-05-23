@@ -1,0 +1,156 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { WHATSAPP_BASE_URL, HORARIO } from '../config';
+
+const materiales = [
+  {
+    nombre: 'PLA',
+    descripcion: 'El más común. Buena resistencia, muchos colores, ideal para piezas decorativas y organizadores de interior.',
+    uso: 'Decoración, soportes, juguetes',
+    icono: '⭐',
+  },
+  {
+    nombre: 'PETG',
+    descripcion: 'Más resistente al calor y la humedad que el PLA. Ideal para piezas funcionales o de exterior.',
+    uso: 'Piezas funcionales, exterior',
+    icono: '🔧',
+  },
+  {
+    nombre: 'TPU',
+    descripcion: 'Flexible y resistente a golpes. Ideal para fundas, protecciones y piezas que necesitan doblar.',
+    uso: 'Fundas, protecciones, juntas',
+    icono: '🌀',
+  },
+];
+
+const waUrl = `${WHATSAPP_BASE_URL}?text=${encodeURIComponent('Hola Pochita3D! Quiero hacer un pedido personalizado.')}`;
+---
+
+<BaseLayout title="Cómo hacer un pedido" description="Aprende cómo hacer un pedido personalizado en Pochita3D. Proceso simple por WhatsApp.">
+  <section class="page-header">
+    <div class="container">
+      <h1>¿Cómo hacer un pedido?</h1>
+      <p>Es muy simple. Todo se coordina por WhatsApp — sin formularios complicados.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="steps-vertical">
+        <div class="step-v">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h3>Escribinos por WhatsApp</h3>
+            <p>Contanos qué querés: si es un producto del catálogo, envianos el nombre. Si es un pedido personalizado, describí lo que tenés en mente (con foto o referencia si tenés).</p>
+            <a href={waUrl} target="_blank" rel="noopener" class="btn btn-whatsapp" style="margin-top:0.75rem;display:inline-flex">💬 Abrir WhatsApp</a>
+          </div>
+        </div>
+        <div class="step-v">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h3>Elegimos los detalles</h3>
+            <p>Te consultamos: color, material, tamaño y cualquier personalización. Te damos el precio final antes de empezar — sin sorpresas.</p>
+          </div>
+        </div>
+        <div class="step-v">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h3>Confirmás y pagás</h3>
+            <p>Una vez acordado, pedimos un adelanto para empezar la impresión. El resto se paga al retirar o recibir.</p>
+          </div>
+        </div>
+        <div class="step-v">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <h3>Fabricamos tu pieza</h3>
+            <p>Tiempo estimado según el producto (se indica en cada ficha). Te avisamos cuando esté lista con una foto.</p>
+          </div>
+        </div>
+        <div class="step-v">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <h3>Entrega o envío</h3>
+            <p>Coordinamos entrega en mano o envío por encomienda dentro de Bolivia. El costo de envío corre por cuenta del comprador.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="materiales-section">
+    <div class="container">
+      <h2>Materiales disponibles</h2>
+      <p class="section-sub">¿No sabés cuál elegir? Te asesoramos por WhatsApp.</p>
+      <div class="materiales-grid">
+        {materiales.map(m => (
+          <div class="material-card">
+            <div class="material-icon">{m.icono}</div>
+            <h3>{m.nombre}</h3>
+            <p>{m.descripcion}</p>
+            <p class="material-uso"><strong>Ideal para:</strong> {m.uso}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="info-box">
+        <h3>📋 Información importante</h3>
+        <ul>
+          <li>Respondemos consultas en horario: <strong>{HORARIO}</strong></li>
+          <li>Los tiempos de fabricación son estimativos y pueden variar según la complejidad</li>
+          <li>Para pedidos personalizados, podés enviarnos el archivo .STL si tenés el diseño</li>
+          <li>También descargamos diseños de MakerWorld si encontrás algo que te guste ahí</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-header { background: var(--cream-dark); border-bottom: 1px solid var(--border); padding: 2.5rem 0; }
+  .page-header h1 { margin-bottom: 0.5rem; }
+  .page-header p { color: var(--text-muted); }
+  .steps-vertical { display: flex; flex-direction: column; gap: 0; max-width: 640px; }
+  .step-v { display: flex; gap: 1.5rem; position: relative; padding-bottom: 2rem; }
+  .step-v:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 19px;
+    top: 40px;
+    bottom: 0;
+    width: 2px;
+    background: var(--border);
+  }
+  .step-num {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--terracotta);
+    color: var(--white);
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 1rem;
+  }
+  .step-content h3 { margin-bottom: 0.4rem; }
+  .step-content p { color: var(--text-muted); line-height: 1.6; font-size: 0.95rem; }
+  .materiales-section { background: var(--cream-dark); }
+  .materiales-section h2 { margin-bottom: 0.4rem; }
+  .section-sub { color: var(--text-muted); margin-bottom: 1.75rem; }
+  .materiales-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+  .material-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; }
+  .material-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+  .material-card h3 { margin-bottom: 0.5rem; }
+  .material-card p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; }
+  .material-uso { margin-top: 0.5rem; }
+  .info-box { background: var(--cream-dark); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem 2rem; }
+  .info-box h3 { margin-bottom: 0.75rem; }
+  .info-box ul { padding-left: 1.25rem; }
+  .info-box li { color: var(--text-muted); margin-bottom: 0.4rem; font-size: 0.9rem; line-height: 1.6; }
+  @media (max-width: 768px) { .materiales-grid { grid-template-columns: 1fr; } }
+</style>

@@ -1,0 +1,81 @@
+:root {
+  --cream: #faf7f2;
+  --cream-dark: #f0e8e0;
+  --terracotta: #c85a2a;
+  --terracotta-dark: #a8471f;
+  --text: #2d1f14;
+  --text-muted: #7a6a5a;
+  --border: #e8ddd3;
+  --white: #ffffff;
+  --shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --whatsapp: #25d366;
+  --messenger: #0084ff;
+  --max-width: 1100px;
+  --font: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-family: var(--font); background: var(--cream); color: var(--text); scroll-behavior: smooth; }
+
+body { min-height: 100vh; display: flex; flex-direction: column; }
+
+main { flex: 1; }
+
+img { max-width: 100%; height: auto; display: block; }
+
+a { color: var(--terracotta); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+h1, h2, h3 { line-height: 1.2; }
+h1 { font-size: clamp(1.8rem, 4vw, 2.8rem); }
+h2 { font-size: clamp(1.4rem, 3vw, 2rem); }
+h3 { font-size: 1.1rem; }
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.4rem;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  transition: opacity 0.15s, transform 0.1s;
+}
+.btn:hover { opacity: 0.88; transform: translateY(-1px); text-decoration: none; }
+.btn:active { transform: translateY(0); }
+
+.btn-primary { background: var(--terracotta); color: var(--white); }
+.btn-whatsapp { background: var(--whatsapp); color: var(--white); }
+.btn-messenger { background: var(--messenger); color: var(--white); }
+.btn-outline { background: transparent; color: var(--terracotta); border: 2px solid var(--terracotta); }
+
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: var(--cream-dark);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+.badge-stock { background: #d4edda; color: #2d6a4f; border-color: #b8dbc4; }
+.badge-pedido { background: #fff3cd; color: #856404; border-color: #ffc107; }
+
+section { padding: 3rem 0; }
+
+@media (max-width: 768px) {
+  section { padding: 2rem 0; }
+}

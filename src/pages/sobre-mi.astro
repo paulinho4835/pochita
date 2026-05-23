@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { CIUDAD, FACEBOOK_URL, WHATSAPP_BASE_URL } from '../config';
+const waUrl = `${WHATSAPP_BASE_URL}?text=${encodeURIComponent('Hola Pochita3D!')}`;
+---
+
+<BaseLayout title="Sobre mí" description="Conocé la historia detrás de Pochita3D, un emprendimiento de impresión 3D hecho con amor en Bolivia.">
+  <section class="page-header">
+    <div class="container">
+      <h1>Sobre mí 🐾</h1>
+    </div>
+  </section>
+
+  <section>
+    <div class="container about-inner">
+      <div class="about-image">
+        <div class="about-photo-placeholder">
+          🐾<br /><span>Paulo + Pochita</span>
+        </div>
+      </div>
+      <div class="about-text">
+        <h2>Hola, soy Paulo</h2>
+        <p>Soy el maker detrás de Pochita3D, un pequeño emprendimiento de impresión 3D que nació desde casa, en {CIUDAD}.</p>
+        <p>Todo empezó con la curiosidad de crear cosas con mis manos (bueno, con la impresora). Poco a poco fui aprendiendo, mejorando la calidad de las piezas y descubriendo que había gente que quería lo mismo que yo hacía para mí.</p>
+        <p>El nombre viene de <strong>Pochita</strong>, mi perra. Ella siempre está ahí, durmiendo a los pies de la impresora, "supervisando" cada trabajo. Sin ella, esto no sería lo mismo.</p>
+        <p>Cada pieza que salga de acá la hice yo, con atención al detalle y con ganas de que te dure. Si tenés alguna duda o querés algo especial, escribime.</p>
+        <div class="about-actions">
+          <a href={waUrl} target="_blank" rel="noopener" class="btn btn-whatsapp">💬 Escribime</a>
+          {FACEBOOK_URL && <a href={FACEBOOK_URL} target="_blank" rel="noopener" class="btn btn-outline">Facebook</a>}
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-header { background: var(--cream-dark); border-bottom: 1px solid var(--border); padding: 2.5rem 0; }
+  .about-inner { display: grid; grid-template-columns: 1fr 2fr; gap: 3rem; align-items: start; }
+  .about-photo-placeholder {
+    aspect-ratio: 3/4;
+    background: var(--cream-dark);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    color: var(--text-muted);
+    gap: 0.5rem;
+  }
+  .about-photo-placeholder span { font-size: 0.9rem; font-weight: 600; }
+  .about-text h2 { margin-bottom: 1rem; }
+  .about-text p { color: var(--text-muted); line-height: 1.8; margin-bottom: 1rem; }
+  .about-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.5rem; }
+  @media (max-width: 700px) { .about-inner { grid-template-columns: 1fr; } }
+</style>
