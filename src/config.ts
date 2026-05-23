@@ -1,7 +1,8 @@
 export const WHATSAPP_NUMBER = '59162552020';
 export const WHATSAPP_BASE_URL = `https://wa.me/${WHATSAPP_NUMBER}`;
 export const FACEBOOK_URL = 'https://www.facebook.com/paulinho.4835';
-export const INSTAGRAM_URL = ''; // Opcional
+export const INSTAGRAM_URL = ''; // Ej: https://instagram.com/pochita3d
+export const TIKTOK_URL = '';   // Ej: https://tiktok.com/@pochita3d
 export const CIUDAD = 'La Paz, Bolivia'; // Reemplazá con tu ciudad
 export const SITE_NAME = 'Pochita3D';
 export const SITE_DESCRIPTION = 'Impresiones 3D hechas con cariño en Bolivia. Catálogo de piezas en PLA, PETG y TPU. Pedidos personalizados.';
