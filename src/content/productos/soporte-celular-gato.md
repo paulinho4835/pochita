@@ -9,7 +9,7 @@ disponibilidad: Bajo pedido
 categoria: Decoración
 descripcion: Adorable soporte de celular con forma de gato sentado. Funcional y decorativo, perfecto para el escritorio o mesa de noche.
 destacado: true
-imagen: /images/productos/soporte-gato.webp
+imagen: /images/productos/soporte-gato-nuevo.webp
 mensajeWhatsApp: "Hola Pochita3D! Me interesa el soporte gato (Bs. 25). ¿En qué color lo tienen?"
 ---
 
