@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Página no encontrada" description="Esta página no existe.">
+  <section class="not-found">
+    <div class="container">
+      <div class="paw">🐾</div>
+      <h1>404</h1>
+      <p>Pochita se comió esta página. No la encontramos.</p>
+      <div class="actions">
+        <a href="/catalogo" class="btn btn-primary">Ver catálogo</a>
+        <a href="/" class="btn btn-outline">Volver al inicio</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found {
+    text-align: center;
+    padding: 6rem 1rem;
+  }
+  .paw { font-size: 5rem; margin-bottom: 1rem; }
+  .not-found h1 { font-size: 5rem; color: var(--terracotta); margin-bottom: 0.5rem; line-height: 1; }
+  .not-found p { color: var(--text-muted); font-size: 1.1rem; margin-bottom: 2rem; }
+  .actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+</style>

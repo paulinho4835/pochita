@@ -47,6 +47,7 @@ const waUrl = `${WHATSAPP_BASE_URL}?text=${encodeURIComponent('Hola Pochita3D! Q
               disponibilidad={p.data.disponibilidad}
               tiempoFabricacion={p.data.tiempoFabricacion}
               mensajeWhatsApp={p.data.mensajeWhatsApp}
+              badge={p.data.badge}
             />
           ))}
         </div>
@@ -82,6 +83,30 @@ const waUrl = `${WHATSAPP_BASE_URL}?text=${encodeURIComponent('Hola Pochita3D! Q
       </div>
       <div style="text-align:center;margin-top:2rem">
         <a href="/pedidos" class="btn btn-outline">Ver detalles del proceso →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESEÑAS -->
+  <section class="reviews">
+    <div class="container">
+      <h2 style="text-align:center;margin-bottom:2rem">Lo que dicen nuestros clientes</h2>
+      <div class="reviews-grid">
+        <div class="review-card">
+          <div class="stars">★★★★★</div>
+          <p>"Pedí un soporte para celular y quedó perfecto. La atención por WhatsApp fue muy rápida y el producto llegó en el tiempo que dijeron."</p>
+          <span class="reviewer">— María L., La Paz</span>
+        </div>
+        <div class="review-card">
+          <div class="stars">★★★★★</div>
+          <p>"Excelente calidad. El acabado es muy prolijo, no parece impresión casera para nada. Totalmente recomendado."</p>
+          <span class="reviewer">— Carlos M., Cochabamba</span>
+        </div>
+        <div class="review-card">
+          <div class="stars">★★★★★</div>
+          <p>"El soporte de gato es adorable. Ya pedí el segundo para mi escritorio del trabajo. Buen precio y bien terminado."</p>
+          <span class="reviewer">— Valeria R., La Paz</span>
+        </div>
       </div>
     </div>
   </section>
@@ -138,4 +163,17 @@ const waUrl = `${WHATSAPP_BASE_URL}?text=${encodeURIComponent('Hola Pochita3D! Q
     .steps { grid-template-columns: 1fr 1fr; }
   }
   @media (max-width: 480px) { .steps { grid-template-columns: 1fr; } }
+  .reviews { background: var(--white); }
+  .reviews h2 { color: var(--text); }
+  .reviews-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+  .review-card {
+    background: var(--cream-dark);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+  }
+  .stars { color: #f59e0b; font-size: 1.1rem; margin-bottom: 0.75rem; letter-spacing: 2px; }
+  .review-card p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.7; margin-bottom: 0.75rem; font-style: italic; }
+  .reviewer { font-size: 0.8rem; font-weight: 600; color: var(--text); }
+  @media (max-width: 768px) { .reviews-grid { grid-template-columns: 1fr; } }
 </style>

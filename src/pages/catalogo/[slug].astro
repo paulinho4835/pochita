@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection, render } from 'astro:content';
-import { WHATSAPP_BASE_URL } from '../../config';
+import { WHATSAPP_BASE_URL, WHATSAPP_NUMBER } from '../../config';
 
 export async function getStaticPaths() {
   const productos = await getCollection('productos');
@@ -12,7 +12,8 @@ const { producto } = Astro.props;
 const { Content } = await render(producto);
 const d = producto.data;
 
-const waMsg = d.mensajeWhatsApp ?? `Hola Pochita3D! Me interesa el ${d.nombre} (Bs. ${d.precio}). ¿Está disponible?`;
+const colores = d.colores.split(',').map((c: string) => c.trim());
+const waMsg = `Hola Pochita3D! Me interesa el ${d.nombre} en color ${colores[0]} (Bs. ${d.precio}). ¿Está disponible?`;
 const waUrl = `${WHATSAPP_BASE_URL}?text=${encodeURIComponent(waMsg)}`;
 const badgeClass = d.disponibilidad === 'Stock disponible' ? 'badge-stock' : 'badge-pedido';
 ---
@@ -45,7 +46,14 @@ const badgeClass = d.disponibilidad === 'Stock disponible' ? 'badge-stock' : 'ba
           <div class="spec"><span class="spec-label">📦 Material</span><span>{d.material}</span></div>
           <div class="spec"><span class="spec-label">📐 Dimensiones</span><span>{d.dimensiones}</span></div>
           <div class="spec"><span class="spec-label">⏱ Fabricación</span><span>{d.tiempoFabricacion}</span></div>
-          <div class="spec"><span class="spec-label">🎨 Colores</span><span>{d.colores}</span></div>
+          <div class="spec color-row">
+            <span class="spec-label">🎨 Color</span>
+            <div class="color-chips" id="color-chips">
+              {colores.map((color: string, i: number) => (
+                <button class={`color-chip${i === 0 ? ' selected' : ''}`} data-color={color}>{color}</button>
+              ))}
+            </div>
+          </div>
           <div class="spec">
             <span class="spec-label">✅ Disponibilidad</span>
             <span class={`badge ${badgeClass}`}>{d.disponibilidad}</span>
@@ -53,7 +61,7 @@ const badgeClass = d.disponibilidad === 'Stock disponible' ? 'badge-stock' : 'ba
         </div>
 
         <div class="product-actions">
-          <a href={waUrl} target="_blank" rel="noopener" class="btn btn-whatsapp">
+          <a href={waUrl} id="wa-btn" data-nombre={d.nombre} data-precio={d.precio} data-phone={WHATSAPP_NUMBER} target="_blank" rel="noopener" class="btn btn-whatsapp">
             💬 Consultar por WhatsApp
           </a>
           <a href="/pedidos" class="btn btn-outline">Ver cómo hacer un pedido</a>
@@ -107,6 +115,20 @@ const badgeClass = d.disponibilidad === 'Stock disponible' ? 'badge-stock' : 'ba
   .product-specs { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1.5rem; }
   .spec { display: flex; align-items: center; gap: 0.75rem; font-size: 0.9rem; }
   .spec-label { color: var(--text-muted); min-width: 130px; font-size: 0.85rem; }
+  .color-row { align-items: flex-start; }
+  .color-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .color-chip {
+    padding: 0.3rem 0.85rem;
+    border-radius: 20px;
+    border: 2px solid var(--border);
+    background: var(--white);
+    color: var(--text);
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+  }
+  .color-chip:hover { border-color: var(--terracotta); }
+  .color-chip.selected { border-color: var(--terracotta); background: var(--terracotta); color: white; font-weight: 600; }
   .product-actions { display: flex; flex-direction: column; gap: 0.75rem; }
   .product-actions .btn { justify-content: center; padding: 0.85rem; font-size: 1rem; }
   .product-content { border-top: 1px solid var(--border); padding: 2rem 0; max-width: 680px; line-height: 1.8; }
@@ -119,6 +141,7 @@ const badgeClass = d.disponibilidad === 'Stock disponible' ? 'badge-stock' : 'ba
 </style>
 
 <script>
+  // Gallery
   const mainImg = document.querySelector<HTMLImageElement>('.main-image');
   const thumbs = document.querySelectorAll<HTMLImageElement>('.thumb');
   thumbs.forEach(thumb => {
@@ -126,6 +149,24 @@ const badgeClass = d.disponibilidad === 'Stock disponible' ? 'badge-stock' : 'ba
       if (mainImg && thumb.dataset.src) mainImg.src = thumb.dataset.src;
       thumbs.forEach(t => t.classList.remove('active'));
       thumb.classList.add('active');
+    });
+  });
+
+  // Color chips
+  const chips = document.querySelectorAll<HTMLButtonElement>('.color-chip');
+  const waBtn = document.getElementById('wa-btn') as HTMLAnchorElement | null;
+  chips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      chips.forEach(c => c.classList.remove('selected'));
+      chip.classList.add('selected');
+      if (waBtn) {
+        const color = chip.dataset.color ?? '';
+        const nombre = waBtn.dataset.nombre ?? '';
+        const precio = waBtn.dataset.precio ?? '';
+        const phone = waBtn.dataset.phone ?? '';
+        const msg = `Hola Pochita3D! Me interesa el ${nombre} en color ${color} (Bs. ${precio}). ¿Está disponible?`;
+        waBtn.href = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+      }
     });
   });
 </script>

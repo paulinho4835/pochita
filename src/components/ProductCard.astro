@@ -10,9 +10,10 @@ interface Props {
   disponibilidad: string;
   tiempoFabricacion: string;
   mensajeWhatsApp?: string;
+  badge?: string;
 }
 
-const { slug, nombre, precio, material, imagen, disponibilidad, tiempoFabricacion, mensajeWhatsApp } = Astro.props;
+const { slug, nombre, precio, material, imagen, disponibilidad, tiempoFabricacion, mensajeWhatsApp, badge } = Astro.props;
 
 const badgeClass = disponibilidad === 'Stock disponible' ? 'badge-stock' : 'badge-pedido';
 const waMsg = mensajeWhatsApp ?? `Hola! Me interesa el ${nombre}. ¿Está disponible?`;
@@ -24,6 +25,7 @@ const waUrl = `${WHATSAPP_BASE_URL}?text=${encodeURIComponent(waMsg)}`;
     <div class="card-image">
       <img src={imagen} alt={nombre} loading="lazy" />
       <span class="material-badge">{material}</span>
+      {badge && <span class={`product-badge product-badge--${badge === 'Nuevo' ? 'new' : badge === 'Popular' ? 'popular' : 'low'}`}>{badge}</span>}
     </div>
   </a>
   <div class="card-body">
@@ -50,10 +52,10 @@ const waUrl = `${WHATSAPP_BASE_URL}?text=${encodeURIComponent(waMsg)}`;
     display: flex;
     flex-direction: column;
   }
-  .product-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+  .product-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
   .card-image { position: relative; aspect-ratio: 4/3; overflow: hidden; background: var(--cream-dark); }
-  .card-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
-  .product-card:hover .card-image img { transform: scale(1.04); }
+  .card-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.35s; }
+  .product-card:hover .card-image img { transform: scale(1.06); }
   .card-image-link { display: block; }
   .material-badge {
     position: absolute;
@@ -67,6 +69,20 @@ const waUrl = `${WHATSAPP_BASE_URL}?text=${encodeURIComponent(waMsg)}`;
     border-radius: 20px;
     letter-spacing: 0.05em;
   }
+  .product-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 3px 9px;
+    border-radius: 20px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .product-badge--new      { background: #22c55e; color: white; }
+  .product-badge--popular  { background: #f59e0b; color: white; }
+  .product-badge--low      { background: #ef4444; color: white; }
   .card-body {
     padding: 1rem;
     display: flex;

@@ -11,7 +11,7 @@ const categorias = ['Todos', ...new Set(allProducts.map(p => p.data.categoria))]
   <section class="catalogo-header">
     <div class="container">
       <h1>Catálogo</h1>
-      <p>Todas nuestras piezas disponibles. ¿No encontrás lo que buscás? <a href="/pedidos">Hacé tu pedido personalizado.</a></p>
+      <p>Todas nuestras piezas disponibles. ¿No encuentras lo que buscas? <a href="/pedidos">Haz tu pedido personalizado.</a></p>
     </div>
   </section>
 
@@ -37,6 +37,7 @@ const categorias = ['Todos', ...new Set(allProducts.map(p => p.data.categoria))]
               disponibilidad={product.data.disponibilidad}
               tiempoFabricacion={product.data.tiempoFabricacion}
               mensajeWhatsApp={product.data.mensajeWhatsApp}
+              badge={product.data.badge}
             />
           </div>
         ))}

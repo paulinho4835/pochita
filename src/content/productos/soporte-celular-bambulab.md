@@ -9,6 +9,7 @@ disponibilidad: Bajo pedido
 categoria: Organización
 descripcion: Soporte plegable de diseño robusto. Se dobla completamente plano y lo llevas en cualquier bolsillo.
 destacado: false
+badge: Nuevo
 imagen: /images/productos/soporte-bambulab.jpg
 mensajeWhatsApp: "Hola Pochita3D! Me interesa el soporte plegable Bambulab (Bs. 30). ¿En qué color lo tienen?"
 ---

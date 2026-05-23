@@ -14,6 +14,7 @@ const productos = defineCollection({
     categoria: z.enum(['Organización', 'Decoración', 'Gaming', 'Hogar', 'Otro']),
     descripcion: z.string(),
     destacado: z.boolean().default(false),
+    badge: z.enum(['Nuevo', 'Popular', 'Últimas unidades']).optional(),
     imagen: z.string(),
     imagenes: z.array(z.string()).optional().default([]),
     mensajeWhatsApp: z.string().optional(),

@@ -9,6 +9,7 @@ disponibilidad: Bajo pedido
 categoria: Decoración
 descripcion: Un perrito que sostiene tu celular. Lindo, funcional y perfecto para el escritorio o la mesita de noche.
 destacado: true
+badge: Nuevo
 imagen: /images/productos/soporte-perrito.webp
 mensajeWhatsApp: "Hola Pochita3D! Me interesa el soporte perrito para celular (Bs. 25). ¿En qué color lo tienen?"
 ---
