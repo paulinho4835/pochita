@@ -1,6 +1,6 @@
-export const WHATSAPP_NUMBER = '591XXXXXXXXX'; // Reemplazá con tu número boliviano
+export const WHATSAPP_NUMBER = '59162552020';
 export const WHATSAPP_BASE_URL = `https://wa.me/${WHATSAPP_NUMBER}`;
-export const FACEBOOK_URL = 'https://www.facebook.com/marketplace/'; // Reemplazá con tu perfil
+export const FACEBOOK_URL = 'https://www.facebook.com/paulinho.4835';
 export const INSTAGRAM_URL = ''; // Opcional
 export const CIUDAD = 'La Paz, Bolivia'; // Reemplazá con tu ciudad
 export const SITE_NAME = 'Pochita3D';
