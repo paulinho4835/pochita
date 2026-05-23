@@ -11,6 +11,9 @@ descripcion: Adorable soporte de celular con forma de gato sentado. Funcional y 
 destacado: true
 badge: Popular
 imagen: /images/productos/soporte-gato-nuevo.webp
+imagenes:
+  - /images/productos/soporte-gato-3.webp
+  - /images/productos/soporte-gato-4.webp
 mensajeWhatsApp: "Hola Pochita3D! Me interesa el soporte gato (Bs. 25). ¿En qué color lo tienen?"
 ---
 

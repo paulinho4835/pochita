@@ -1,14 +1,15 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProductCard from '../../components/ProductCard.astro';
 import { getCollection, render } from 'astro:content';
-import { WHATSAPP_BASE_URL, WHATSAPP_NUMBER } from '../../config';
+import { WHATSAPP_BASE_URL, WHATSAPP_NUMBER, SITE_NAME } from '../../config';
 
 export async function getStaticPaths() {
   const productos = await getCollection('productos');
-  return productos.map(p => ({ params: { slug: p.id }, props: { producto: p } }));
+  return productos.map(p => ({ params: { slug: p.id }, props: { producto: p, todos: productos } }));
 }
 
-const { producto } = Astro.props;
+const { producto, todos } = Astro.props;
 const { Content } = await render(producto);
 const d = producto.data;
 
@@ -16,9 +17,40 @@ const colores = d.colores.split(',').map((c: string) => c.trim());
 const waMsg = `Hola Pochita3D! Me interesa el ${d.nombre} en color ${colores[0]} (Bs. ${d.precio}). ¿Está disponible?`;
 const waUrl = `${WHATSAPP_BASE_URL}?text=${encodeURIComponent(waMsg)}`;
 const badgeClass = d.disponibilidad === 'Stock disponible' ? 'badge-stock' : 'badge-pedido';
+
+const relacionados = todos
+  .filter(p => p.id !== producto.id && p.data.categoria === d.categoria)
+  .slice(0, 4);
+
+const allImages = [d.imagen, ...(d.imagenes ?? [])];
+
+const canonicalUrl = `https://pochita3d.netlify.app/catalogo/${producto.id}`;
+const schemaProduct = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": d.nombre,
+  "description": d.descripcion,
+  "image": allImages.map(img => `https://pochita3d.netlify.app${img}`),
+  "brand": { "@type": "Brand", "name": SITE_NAME },
+  "material": d.material,
+  "offers": {
+    "@type": "Offer",
+    "priceCurrency": "BOB",
+    "price": d.precio,
+    "availability": d.disponibilidad === 'Stock disponible'
+      ? "https://schema.org/InStock"
+      : "https://schema.org/MadeToOrder",
+    "url": canonicalUrl,
+    "seller": { "@type": "Organization", "name": SITE_NAME }
+  }
+});
 ---
 
 <BaseLayout title={d.nombre} description={d.descripcion} image={d.imagen}>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={schemaProduct} />
+  </Fragment>
+
   <div class="container">
     <nav class="breadcrumb">
       <a href="/">Inicio</a> / <a href="/catalogo">Catálogo</a> / <span>{d.nombre}</span>
@@ -26,11 +58,14 @@ const badgeClass = d.disponibilidad === 'Stock disponible' ? 'badge-stock' : 'ba
 
     <div class="product-detail">
       <div class="product-gallery">
-        <img src={d.imagen} alt={d.nombre} class="main-image" />
-        {d.imagenes && d.imagenes.length > 0 && (
+        <div class="main-image-wrap">
+          <img src={d.imagen} alt={d.nombre} class="main-image" id="main-image" loading="eager" decoding="async" />
+          <button class="lightbox-trigger" id="lightbox-open" aria-label="Ver imagen ampliada">⤢</button>
+        </div>
+        {allImages.length > 1 && (
           <div class="thumbnails">
-            {[d.imagen, ...d.imagenes].map((img, i) => (
-              <img src={img} alt={`${d.nombre} vista ${i + 1}`} class={`thumb ${i === 0 ? 'active' : ''}`} data-src={img} />
+            {allImages.map((img, i) => (
+              <img src={img} alt={`${d.nombre} vista ${i + 1}`} class={`thumb ${i === 0 ? 'active' : ''}`} data-src={img} loading="lazy" decoding="async" />
             ))}
           </div>
         )}
@@ -72,41 +107,68 @@ const badgeClass = d.disponibilidad === 'Stock disponible' ? 'badge-stock' : 'ba
     <div class="product-content">
       <Content />
     </div>
+
+    {relacionados.length > 0 && (
+      <section class="related">
+        <h2>También te puede interesar</h2>
+        <div class="related-grid">
+          {relacionados.map(p => (
+            <ProductCard
+              slug={p.id}
+              nombre={p.data.nombre}
+              precio={p.data.precio}
+              material={p.data.material}
+              imagen={p.data.imagen}
+              disponibilidad={p.data.disponibilidad}
+              tiempoFabricacion={p.data.tiempoFabricacion}
+              mensajeWhatsApp={p.data.mensajeWhatsApp}
+              badge={p.data.badge}
+            />
+          ))}
+        </div>
+      </section>
+    )}
   </div>
+
+  <!-- Lightbox -->
+  <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Imagen ampliada">
+    <button class="lightbox-close" id="lightbox-close" aria-label="Cerrar">✕</button>
+    <button class="lightbox-prev" id="lightbox-prev" aria-label="Anterior">‹</button>
+    <img src={d.imagen} alt={d.nombre} class="lightbox-img" id="lightbox-img" />
+    <button class="lightbox-next" id="lightbox-next" aria-label="Siguiente">›</button>
+    <p class="lightbox-counter" id="lightbox-counter"></p>
+  </div>
+  <div class="lightbox-backdrop" id="lightbox-backdrop"></div>
 </BaseLayout>
 
 <style>
-  .breadcrumb {
-    padding: 1.25rem 0 0;
-    font-size: 0.85rem;
-    color: var(--text-muted);
-  }
+  .breadcrumb { padding: 1.25rem 0 0; font-size: 0.85rem; color: var(--text-muted); }
   .breadcrumb a { color: var(--text-muted); }
   .breadcrumb a:hover { color: var(--terracotta); }
-  .product-detail {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 3rem;
-    padding: 2rem 0;
-    align-items: start;
-  }
-  .main-image {
-    width: 100%;
-    aspect-ratio: 4/3;
-    object-fit: cover;
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
-  }
-  .thumbnails { display: flex; gap: 0.5rem; margin-top: 0.75rem; flex-wrap: wrap; }
-  .thumb {
-    width: 72px;
-    height: 72px;
-    object-fit: cover;
-    border-radius: var(--radius-sm);
-    border: 2px solid var(--border);
+  .product-detail { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; padding: 2rem 0; align-items: start; }
+  .main-image-wrap { position: relative; }
+  .main-image { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: var(--radius); border: 1px solid var(--border); cursor: zoom-in; }
+  .lightbox-trigger {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(0,0,0,0.55);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    width: 34px;
+    height: 34px;
+    font-size: 1.1rem;
     cursor: pointer;
-    transition: border-color 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
   }
+  .main-image-wrap:hover .lightbox-trigger { opacity: 1; }
+  .thumbnails { display: flex; gap: 0.5rem; margin-top: 0.75rem; flex-wrap: wrap; }
+  .thumb { width: 72px; height: 72px; object-fit: cover; border-radius: var(--radius-sm); border: 2px solid var(--border); cursor: pointer; transition: border-color 0.15s; }
   .thumb.active, .thumb:hover { border-color: var(--terracotta); }
   .product-category { color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.4rem; }
   .product-info h1 { margin-bottom: 0.5rem; font-size: 1.8rem; }
@@ -117,16 +179,7 @@ const badgeClass = d.disponibilidad === 'Stock disponible' ? 'badge-stock' : 'ba
   .spec-label { color: var(--text-muted); min-width: 130px; font-size: 0.85rem; }
   .color-row { align-items: flex-start; }
   .color-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-  .color-chip {
-    padding: 0.3rem 0.85rem;
-    border-radius: 20px;
-    border: 2px solid var(--border);
-    background: var(--white);
-    color: var(--text);
-    font-size: 0.82rem;
-    cursor: pointer;
-    transition: border-color 0.15s, background 0.15s, color 0.15s;
-  }
+  .color-chip { padding: 0.3rem 0.85rem; border-radius: 20px; border: 2px solid var(--border); background: var(--white); color: var(--text); font-size: 0.82rem; cursor: pointer; transition: border-color 0.15s, background 0.15s, color 0.15s; }
   .color-chip:hover { border-color: var(--terracotta); }
   .color-chip.selected { border-color: var(--terracotta); background: var(--terracotta); color: white; font-weight: 600; }
   .product-actions { display: flex; flex-direction: column; gap: 0.75rem; }
@@ -135,14 +188,89 @@ const badgeClass = d.disponibilidad === 'Stock disponible' ? 'badge-stock' : 'ba
   .product-content :global(h2), .product-content :global(h3) { margin: 1.5rem 0 0.5rem; }
   .product-content :global(ul) { padding-left: 1.5rem; }
   .product-content :global(li) { margin-bottom: 0.3rem; }
+
+  /* Related products */
+  .related { border-top: 1px solid var(--border); padding: 2.5rem 0; }
+  .related h2 { margin-bottom: 1.5rem; }
+  .related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.25rem; }
+
+  /* Lightbox */
+  .lightbox-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 900;
+  }
+  .lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 901;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  .lightbox.open, .lightbox-backdrop.open {
+    display: flex;
+  }
+  .lightbox-img {
+    max-width: min(90vw, 900px);
+    max-height: 85vh;
+    object-fit: contain;
+    border-radius: var(--radius);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  .lightbox-close {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+  }
+  .lightbox-close:hover { background: rgba(255,255,255,0.3); }
+  .lightbox-prev, .lightbox-next {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: white;
+    font-size: 2rem;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+  }
+  .lightbox-prev { left: 1rem; }
+  .lightbox-next { right: 1rem; }
+  .lightbox-prev:hover, .lightbox-next:hover { background: rgba(255,255,255,0.3); }
+  .lightbox-counter { position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.7); font-size: 0.85rem; }
+
   @media (max-width: 768px) {
     .product-detail { grid-template-columns: 1fr; gap: 1.5rem; }
+    .lightbox-prev { left: 0.25rem; }
+    .lightbox-next { right: 0.25rem; }
   }
 </style>
 
 <script>
-  // Gallery
-  const mainImg = document.querySelector<HTMLImageElement>('.main-image');
+  // Gallery thumbnails
+  const mainImg = document.getElementById('main-image') as HTMLImageElement;
   const thumbs = document.querySelectorAll<HTMLImageElement>('.thumb');
   thumbs.forEach(thumb => {
     thumb.addEventListener('click', () => {
@@ -168,5 +296,66 @@ const badgeClass = d.disponibilidad === 'Stock disponible' ? 'badge-stock' : 'ba
         waBtn.href = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
       }
     });
+  });
+
+  // Lightbox
+  const images = Array.from(document.querySelectorAll<HTMLImageElement>('.thumb')).map(t => t.dataset.src ?? '');
+  const mainSrc = (document.getElementById('main-image') as HTMLImageElement)?.src ?? '';
+  const allSrcs = images.length > 0 ? images : [mainSrc];
+
+  const lightbox = document.getElementById('lightbox')!;
+  const backdrop = document.getElementById('lightbox-backdrop')!;
+  const lbImg = document.getElementById('lightbox-img') as HTMLImageElement;
+  const lbCounter = document.getElementById('lightbox-counter')!;
+  const lbOpen = document.getElementById('lightbox-open')!;
+  const lbClose = document.getElementById('lightbox-close')!;
+  const lbPrev = document.getElementById('lightbox-prev')!;
+  const lbNext = document.getElementById('lightbox-next')!;
+
+  let currentIdx = 0;
+
+  function openLightbox(idx: number) {
+    currentIdx = idx;
+    lbImg.src = allSrcs[currentIdx];
+    lbCounter.textContent = allSrcs.length > 1 ? `${currentIdx + 1} / ${allSrcs.length}` : '';
+    lbPrev.style.display = allSrcs.length > 1 ? 'flex' : 'none';
+    lbNext.style.display = allSrcs.length > 1 ? 'flex' : 'none';
+    lightbox.classList.add('open');
+    backdrop.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox() {
+    lightbox.classList.remove('open');
+    backdrop.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function showImage(idx: number) {
+    currentIdx = (idx + allSrcs.length) % allSrcs.length;
+    lbImg.src = allSrcs[currentIdx];
+    lbCounter.textContent = `${currentIdx + 1} / ${allSrcs.length}`;
+    // Sync thumbnail active state
+    thumbs.forEach((t, i) => t.classList.toggle('active', i === currentIdx));
+    if (mainImg) mainImg.src = allSrcs[currentIdx];
+  }
+
+  lbOpen.addEventListener('click', () => {
+    const activeThumbIdx = Array.from(thumbs).findIndex(t => t.classList.contains('active'));
+    openLightbox(activeThumbIdx >= 0 ? activeThumbIdx : 0);
+  });
+  mainImg?.addEventListener('click', () => {
+    const activeThumbIdx = Array.from(thumbs).findIndex(t => t.classList.contains('active'));
+    openLightbox(activeThumbIdx >= 0 ? activeThumbIdx : 0);
+  });
+  lbClose.addEventListener('click', closeLightbox);
+  backdrop.addEventListener('click', closeLightbox);
+  lbPrev.addEventListener('click', () => showImage(currentIdx - 1));
+  lbNext.addEventListener('click', () => showImage(currentIdx + 1));
+  document.addEventListener('keydown', e => {
+    if (!lightbox.classList.contains('open')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') showImage(currentIdx - 1);
+    if (e.key === 'ArrowRight') showImage(currentIdx + 1);
   });
 </script>

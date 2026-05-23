@@ -11,6 +11,10 @@ descripcion: Un perrito que sostiene tu celular. Lindo, funcional y perfecto par
 destacado: true
 badge: Nuevo
 imagen: /images/productos/soporte-perrito.webp
+imagenes:
+  - /images/productos/soporte-perrito-2.webp
+  - /images/productos/soporte-perrito-3.webp
+  - /images/productos/soporte-perrito-4.webp
 mensajeWhatsApp: "Hola Pochita3D! Me interesa el soporte perrito para celular (Bs. 25). ¿En qué color lo tienen?"
 ---
 

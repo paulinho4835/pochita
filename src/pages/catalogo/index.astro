@@ -7,7 +7,7 @@ const allProducts = await getCollection('productos');
 const categorias = ['Todos', ...new Set(allProducts.map(p => p.data.categoria))];
 ---
 
-<BaseLayout title="Catálogo" description="Explorá nuestro catálogo de impresiones 3D. Soportes, decoración, organización y más.">
+<BaseLayout title="Catálogo" description="Explora nuestro catálogo de impresiones 3D. Soportes, decoración, organización y más.">
   <section class="catalogo-header">
     <div class="container">
       <h1>Catálogo</h1>
@@ -17,17 +17,31 @@ const categorias = ['Todos', ...new Set(allProducts.map(p => p.data.categoria))]
 
   <section class="catalogo-body">
     <div class="container">
-      <div class="filters" role="group" aria-label="Filtrar por categoría">
-        {categorias.map(cat => (
-          <button class={`filter-btn ${cat === 'Todos' ? 'active' : ''}`} data-filter={cat}>
-            {cat}
-          </button>
-        ))}
+      <div class="toolbar">
+        <div class="filters" role="group" aria-label="Filtrar por categoría">
+          {categorias.map(cat => (
+            <button class={`filter-btn ${cat === 'Todos' ? 'active' : ''}`} data-filter={cat}>
+              {cat}
+            </button>
+          ))}
+        </div>
+        <div class="search-wrap">
+          <input
+            type="search"
+            id="search-input"
+            placeholder="Buscar producto..."
+            autocomplete="off"
+            aria-label="Buscar producto"
+          />
+          <span class="search-icon">🔍</span>
+        </div>
       </div>
+
+      <p class="results-count" id="results-count" aria-live="polite"></p>
 
       <div class="products-grid" id="products-grid">
         {allProducts.map(product => (
-          <div class="product-wrapper" data-categoria={product.data.categoria}>
+          <div class="product-wrapper" data-categoria={product.data.categoria} data-nombre={product.data.nombre.toLowerCase()}>
             <ProductCard
               slug={product.id}
               nombre={product.data.nombre}
@@ -43,9 +57,9 @@ const categorias = ['Todos', ...new Set(allProducts.map(p => p.data.categoria))]
         ))}
       </div>
 
-      {allProducts.length === 0 && (
-        <p class="empty">Pronto habrá productos disponibles. <a href="/contacto">Contactanos</a> para consultas.</p>
-      )}
+      <div id="empty-state" class="empty hidden">
+        <p>No se encontraron productos. <a href="/pedidos">¿Buscas algo personalizado?</a></p>
+      </div>
     </div>
   </section>
 </BaseLayout>
@@ -58,11 +72,18 @@ const categorias = ['Todos', ...new Set(allProducts.map(p => p.data.categoria))]
   }
   .catalogo-header h1 { margin-bottom: 0.5rem; }
   .catalogo-header p { color: var(--text-muted); max-width: 560px; }
+  .toolbar {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+  }
   .filters {
     display: flex;
     gap: 0.5rem;
     flex-wrap: wrap;
-    margin-bottom: 2rem;
+    flex: 1;
   }
   .filter-btn {
     padding: 0.45rem 1rem;
@@ -77,6 +98,36 @@ const categorias = ['Todos', ...new Set(allProducts.map(p => p.data.categoria))]
   }
   .filter-btn:hover { border-color: var(--terracotta); color: var(--terracotta); }
   .filter-btn.active { background: var(--terracotta); border-color: var(--terracotta); color: var(--white); }
+  .search-wrap {
+    position: relative;
+    flex-shrink: 0;
+  }
+  .search-wrap input {
+    padding: 0.45rem 0.75rem 0.45rem 2.25rem;
+    border: 2px solid var(--border);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    background: var(--white);
+    color: var(--text);
+    width: 200px;
+    transition: border-color 0.15s;
+    outline: none;
+  }
+  .search-wrap input:focus { border-color: var(--terracotta); }
+  .search-icon {
+    position: absolute;
+    left: 0.7rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.85rem;
+    pointer-events: none;
+  }
+  .results-count {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 1.25rem;
+    min-height: 1.2em;
+  }
   .products-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -84,20 +135,52 @@ const categorias = ['Todos', ...new Set(allProducts.map(p => p.data.categoria))]
   }
   .product-wrapper.hidden { display: none; }
   .empty { color: var(--text-muted); text-align: center; padding: 3rem 0; }
+  .hidden { display: none !important; }
+  @media (max-width: 600px) {
+    .toolbar { flex-direction: column; }
+    .search-wrap input { width: 100%; }
+    .search-wrap { width: 100%; }
+  }
 </style>
 
 <script>
   const btns = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
   const items = document.querySelectorAll<HTMLElement>('.product-wrapper');
+  const searchInput = document.getElementById('search-input') as HTMLInputElement;
+  const emptyState = document.getElementById('empty-state')!;
+  const resultsCount = document.getElementById('results-count')!;
+
+  let activeFilter = 'Todos';
+  let searchQuery = '';
+
+  function applyFilters() {
+    let visible = 0;
+    items.forEach(item => {
+      const cat = item.dataset.categoria ?? '';
+      const nombre = item.dataset.nombre ?? '';
+      const matchesCat = activeFilter === 'Todos' || cat === activeFilter;
+      const matchesSearch = nombre.includes(searchQuery);
+      const show = matchesCat && matchesSearch;
+      item.classList.toggle('hidden', !show);
+      if (show) visible++;
+    });
+    emptyState.classList.toggle('hidden', visible > 0);
+    resultsCount.textContent = searchQuery || activeFilter !== 'Todos'
+      ? `${visible} producto${visible !== 1 ? 's' : ''} encontrado${visible !== 1 ? 's' : ''}`
+      : '';
+  }
 
   btns.forEach(btn => {
     btn.addEventListener('click', () => {
       btns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      const filter = btn.dataset.filter;
-      items.forEach(item => {
-        item.classList.toggle('hidden', filter !== 'Todos' && item.dataset.categoria !== filter);
-      });
+      activeFilter = btn.dataset.filter ?? 'Todos';
+      applyFilters();
     });
+  });
+
+  searchInput.addEventListener('input', () => {
+    searchQuery = searchInput.value.toLowerCase().trim();
+    applyFilters();
   });
 </script>

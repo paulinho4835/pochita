@@ -1,0 +1,91 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
+import { SITE_NAME } from '../../config';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map(p => ({ params: { slug: p.id }, props: { post: p } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const d = post.data;
+
+function formatDate(date: Date) {
+  return date.toLocaleDateString('es-BO', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+const canonicalUrl = `https://pochita3d.netlify.app/blog/${post.id}`;
+const schemaBlog = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": d.titulo,
+  "description": d.descripcion,
+  "datePublished": d.fecha.toISOString(),
+  "author": { "@type": "Organization", "name": SITE_NAME },
+  "publisher": { "@type": "Organization", "name": SITE_NAME },
+  "url": canonicalUrl,
+  ...(d.imagen ? { "image": `https://pochita3d.netlify.app${d.imagen}` } : {}),
+});
+---
+
+<BaseLayout title={d.titulo} description={d.descripcion} image={d.imagen}>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={schemaBlog} />
+  </Fragment>
+
+  <div class="container">
+    <nav class="breadcrumb">
+      <a href="/">Inicio</a> / <a href="/blog">Blog</a> / <span>{d.titulo}</span>
+    </nav>
+
+    <article class="post">
+      <header class="post-header">
+        {d.categoria && <span class="post-cat">{d.categoria}</span>}
+        <h1>{d.titulo}</h1>
+        <div class="post-meta">
+          <time datetime={d.fecha.toISOString()}>{formatDate(d.fecha)}</time>
+          <span>·</span>
+          <span>{SITE_NAME}</span>
+        </div>
+      </header>
+
+      {d.imagen && (
+        <img src={d.imagen} alt={d.titulo} class="post-hero" loading="eager" decoding="async" />
+      )}
+
+      <div class="post-content">
+        <Content />
+      </div>
+    </article>
+
+    <div class="post-footer">
+      <a href="/blog" class="btn btn-outline">← Volver al blog</a>
+      <a href="/catalogo" class="btn btn-primary">Ver catálogo</a>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .breadcrumb { padding: 1.25rem 0 0; font-size: 0.85rem; color: var(--text-muted); }
+  .breadcrumb a { color: var(--text-muted); }
+  .breadcrumb a:hover { color: var(--terracotta); }
+  .post { max-width: 720px; margin: 0 auto; padding: 2rem 0; }
+  .post-header { margin-bottom: 2rem; }
+  .post-cat { font-size: 0.75rem; font-weight: 700; color: var(--terracotta); text-transform: uppercase; letter-spacing: 0.06em; display: block; margin-bottom: 0.6rem; }
+  .post-header h1 { margin-bottom: 0.75rem; }
+  .post-meta { font-size: 0.82rem; color: var(--text-muted); display: flex; gap: 0.5rem; align-items: center; }
+  .post-hero { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: var(--radius); margin-bottom: 2rem; border: 1px solid var(--border); }
+  .post-content { line-height: 1.85; color: var(--text); }
+  .post-content :global(h2) { font-size: 1.35rem; margin: 2rem 0 0.75rem; color: var(--text); }
+  .post-content :global(h3) { font-size: 1.1rem; margin: 1.5rem 0 0.5rem; }
+  .post-content :global(p) { margin-bottom: 1.1rem; color: var(--text-muted); }
+  .post-content :global(ul), .post-content :global(ol) { padding-left: 1.5rem; margin-bottom: 1.1rem; }
+  .post-content :global(li) { margin-bottom: 0.4rem; color: var(--text-muted); }
+  .post-content :global(strong) { color: var(--text); font-weight: 700; }
+  .post-content :global(a) { color: var(--terracotta); }
+  .post-content :global(hr) { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+  .post-content :global(em) { color: var(--text-muted); }
+  .post-footer { max-width: 720px; margin: 0 auto; padding: 2rem 0; border-top: 1px solid var(--border); display: flex; gap: 1rem; flex-wrap: wrap; }
+</style>

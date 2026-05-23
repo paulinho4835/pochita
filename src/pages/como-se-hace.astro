@@ -1,0 +1,203 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { WHATSAPP_BASE_URL } from '../config';
+
+const waUrl = `${WHATSAPP_BASE_URL}?text=${encodeURIComponent('Hola Pochita3D! Me interesa ver el proceso de impresión. ¿Pueden contarme más?')}`;
+
+const pasos = [
+  {
+    numero: '01',
+    titulo: 'Diseño y archivo 3D',
+    desc: 'Todo empieza con un modelo 3D. Usamos archivos de la comunidad (MakerWorld, Printables) o diseños propios. El modelo se revisa y ajusta para que imprima bien.',
+    icono: '🎨',
+  },
+  {
+    numero: '02',
+    titulo: 'Configuración en el slicer',
+    desc: 'El archivo 3D pasa por un programa "slicer" (Bambu Studio) que lo divide en capas y calcula el tiempo, temperatura, velocidad y relleno óptimos para el material.',
+    icono: '⚙️',
+  },
+  {
+    numero: '03',
+    titulo: 'Impresión',
+    desc: 'La impresora deposita filamento capa por capa, de 0.1 a 0.3 mm cada una. Dependiendo del tamaño, el proceso toma entre 2 y 8 horas. Monitoreamos cada impresión.',
+    icono: '🖨️',
+  },
+  {
+    numero: '04',
+    titulo: 'Post-procesado',
+    desc: 'Se retiran los soportes (si los hay), se lijan bordes si es necesario y se hace control de calidad. Solo pasan las piezas que cumplen el estándar.',
+    icono: '✂️',
+  },
+  {
+    numero: '05',
+    titulo: 'Empaque y entrega',
+    desc: 'La pieza se empaca con protección y se coordina la entrega o envío. Te avisamos cuando está lista con fotos antes de enviártela.',
+    icono: '📦',
+  },
+];
+
+const materiales = [
+  { nombre: 'PLA', desc: 'El más común. Biodegradable, fácil de imprimir, ideal para decoración y piezas de interior. Gran variedad de colores.', color: '#22c55e' },
+  { nombre: 'PETG', desc: 'Más resistente al calor y la humedad que el PLA. Ideal para piezas funcionales que soportan algo de esfuerzo.', color: '#3b82f6' },
+  { nombre: 'TPU', desc: 'Flexible y elástico. Perfecto para fundas, juntas, o piezas que necesitan absorber impactos.', color: '#f59e0b' },
+];
+---
+
+<BaseLayout
+  title="Cómo se hace"
+  description="Conoce el proceso completo de impresión 3D: desde el diseño hasta la entrega. Materiales, tiempos y control de calidad en Pochita3D."
+>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container">
+      <h1>¿Cómo se hace una pieza 3D?</h1>
+      <p>Detrás de cada soporte, figura o accesorio hay horas de trabajo, ajuste y cariño. Te mostramos el proceso completo.</p>
+    </div>
+  </section>
+
+  <!-- PROCESO PASO A PASO -->
+  <section class="proceso">
+    <div class="container">
+      <h2>El proceso, paso a paso</h2>
+      <div class="pasos">
+        {pasos.map((paso, i) => (
+          <div class="paso">
+            <div class="paso-numero">{paso.numero}</div>
+            <div class="paso-body">
+              <div class="paso-icono">{paso.icono}</div>
+              <h3>{paso.titulo}</h3>
+              <p>{paso.desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- VIDEO PLACEHOLDER -->
+  <section class="video-section">
+    <div class="container">
+      <h2>Míralo en acción</h2>
+      <p class="video-sub">Un timelapse del proceso real de impresión.</p>
+      <div class="video-placeholder">
+        <div class="video-inner">
+          <span class="play-icon">▶</span>
+          <p>Video del proceso de impresión</p>
+          <span class="video-hint">Próximamente</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MATERIALES -->
+  <section class="materiales">
+    <div class="container">
+      <h2>Materiales que usamos</h2>
+      <div class="mat-grid">
+        {materiales.map(m => (
+          <div class="mat-card">
+            <div class="mat-badge" style={`background:${m.color}`}>{m.nombre}</div>
+            <p>{m.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- DATOS -->
+  <section class="datos">
+    <div class="container">
+      <div class="datos-grid">
+        <div class="dato">
+          <span class="dato-num">0.2mm</span>
+          <span class="dato-label">Altura de capa típica</span>
+        </div>
+        <div class="dato">
+          <span class="dato-num">200°C</span>
+          <span class="dato-label">Temperatura de impresión PLA</span>
+        </div>
+        <div class="dato">
+          <span class="dato-num">2–8h</span>
+          <span class="dato-label">Tiempo por pieza</span>
+        </div>
+        <div class="dato">
+          <span class="dato-num">100%</span>
+          <span class="dato-label">Control de calidad</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <div class="container">
+      <h2>¿Tienes una idea en mente?</h2>
+      <p>Cuéntanos qué necesitas y te decimos si lo podemos hacer.</p>
+      <a href={waUrl} target="_blank" rel="noopener" class="btn btn-whatsapp">💬 Escríbenos por WhatsApp</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero { background: var(--cream-dark); border-bottom: 1px solid var(--border); padding: 3rem 0 2.5rem; }
+  .hero h1 { margin-bottom: 0.75rem; }
+  .hero p { color: var(--text-muted); max-width: 580px; line-height: 1.7; font-size: 1.05rem; }
+
+  .proceso h2 { margin-bottom: 2rem; }
+  .pasos { display: flex; flex-direction: column; gap: 1.5rem; max-width: 780px; }
+  .paso { display: grid; grid-template-columns: 56px 1fr; gap: 1.25rem; align-items: start; }
+  .paso-numero {
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--terracotta);
+    opacity: 0.25;
+    line-height: 1;
+    padding-top: 0.2rem;
+  }
+  .paso-body { padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
+  .pasos > .paso:last-child .paso-body { border-bottom: none; }
+  .paso-icono { font-size: 1.5rem; margin-bottom: 0.4rem; }
+  .paso-body h3 { margin-bottom: 0.35rem; font-size: 1rem; }
+  .paso-body p { color: var(--text-muted); line-height: 1.65; font-size: 0.92rem; }
+
+  .video-section { background: var(--cream-dark); }
+  .video-section h2 { margin-bottom: 0.5rem; }
+  .video-sub { color: var(--text-muted); margin-bottom: 1.5rem; }
+  .video-placeholder {
+    width: 100%;
+    max-width: 720px;
+    aspect-ratio: 16/9;
+    background: var(--border);
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed var(--border);
+  }
+  .video-inner { text-align: center; color: var(--text-muted); }
+  .play-icon { font-size: 3rem; display: block; margin-bottom: 0.5rem; opacity: 0.4; }
+  .video-inner p { font-size: 0.95rem; }
+  .video-hint { font-size: 0.75rem; opacity: 0.6; margin-top: 0.25rem; display: block; }
+
+  .materiales h2 { margin-bottom: 1.5rem; }
+  .mat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+  .mat-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; }
+  .mat-badge { display: inline-block; color: white; font-weight: 800; font-size: 0.8rem; padding: 3px 10px; border-radius: 20px; margin-bottom: 0.75rem; letter-spacing: 0.05em; }
+  .mat-card p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.65; }
+
+  .datos { background: var(--terracotta); }
+  .datos-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; text-align: center; }
+  .dato { padding: 1rem 0; }
+  .dato-num { display: block; font-size: 2rem; font-weight: 900; color: white; margin-bottom: 0.25rem; }
+  .dato-label { font-size: 0.82rem; color: rgba(255,255,255,0.8); }
+
+  .cta { text-align: center; }
+  .cta h2 { margin-bottom: 0.75rem; }
+  .cta p { color: var(--text-muted); margin-bottom: 1.5rem; }
+
+  @media (max-width: 768px) {
+    .mat-grid { grid-template-columns: 1fr; }
+    .datos-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>

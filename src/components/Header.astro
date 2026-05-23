@@ -3,6 +3,8 @@ import { SITE_NAME } from '../config';
 
 const navLinks = [
   { href: '/catalogo', label: 'Catálogo' },
+  { href: '/como-se-hace', label: 'Cómo se hace' },
+  { href: '/blog', label: 'Blog' },
   { href: '/pedidos', label: 'Cómo pedir' },
   { href: '/faq', label: 'FAQ' },
   { href: '/sobre-mi', label: 'Sobre mí' },
@@ -19,10 +21,6 @@ const path = Astro.url.pathname;
       <span class="logo-text">{SITE_NAME.replace('3D', '')}<span class="logo-3d">3D</span></span>
     </a>
 
-    <button class="menu-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav">
-      <span></span><span></span><span></span>
-    </button>
-
     <nav id="nav" class="nav">
       {navLinks.map(link => (
         <a
@@ -33,6 +31,16 @@ const path = Astro.url.pathname;
         </a>
       ))}
     </nav>
+
+    <div class="header-actions">
+      <button class="theme-toggle" id="theme-toggle" aria-label="Cambiar tema" title="Cambiar modo claro/oscuro">
+        <span class="icon-sun">☀️</span>
+        <span class="icon-moon">🌙</span>
+      </button>
+      <button class="menu-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
   </div>
 </header>
 
@@ -61,23 +69,48 @@ const path = Astro.url.pathname;
     font-size: 1.65rem;
     color: var(--text);
     letter-spacing: -0.5px;
+    flex-shrink: 0;
   }
   .logo:hover { text-decoration: none; }
   .logo-3d { color: var(--terracotta); }
   .logo-paw { font-size: 1.75rem; }
-  .nav { display: flex; gap: 0.25rem; align-items: center; }
+  .nav { display: flex; gap: 0.25rem; align-items: center; flex-wrap: wrap; }
   .nav-link {
-    padding: 0.45rem 0.85rem;
+    padding: 0.45rem 0.75rem;
     border-radius: var(--radius-sm);
     color: var(--text-muted);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 500;
     text-decoration: none;
     transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
   }
   .nav-link:hover { background: var(--cream-dark); color: var(--text); text-decoration: none; }
   .nav-link.active { background: var(--cream-dark); color: var(--terracotta); font-weight: 600; }
+  .header-actions { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+  .theme-toggle {
+    background: var(--cream-dark);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    width: 38px;
+    height: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    transition: background 0.15s;
+    padding: 0;
+  }
+  .theme-toggle:hover { background: var(--border); }
+  .icon-sun, .icon-moon { line-height: 1; }
+  [data-theme="dark"] .icon-sun { display: none; }
+  [data-theme="light"] .icon-moon { display: none; }
   .menu-toggle { display: none; }
+
+  @media (max-width: 900px) {
+    .nav-link { font-size: 0.8rem; padding: 0.4rem 0.55rem; }
+  }
 
   @media (max-width: 768px) {
     .menu-toggle {
@@ -115,10 +148,20 @@ const path = Astro.url.pathname;
 </style>
 
 <script>
+  // Mobile menu
   const toggle = document.querySelector('.menu-toggle') as HTMLButtonElement;
   const nav = document.querySelector('#nav') as HTMLElement;
   toggle?.addEventListener('click', () => {
     const isOpen = nav.classList.toggle('open');
     toggle.setAttribute('aria-expanded', String(isOpen));
+  });
+
+  // Dark mode toggle
+  const themeBtn = document.getElementById('theme-toggle') as HTMLButtonElement;
+  themeBtn?.addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
   });
 </script>

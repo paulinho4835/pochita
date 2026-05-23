@@ -16,6 +16,17 @@
   --font: system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 
+/* Dark mode */
+[data-theme="dark"] {
+  --cream: #1c1410;
+  --cream-dark: #251b13;
+  --text: #ede4d8;
+  --text-muted: #a09080;
+  --border: #3a2a1e;
+  --white: #2a1e16;
+  --shadow: 0 2px 12px rgba(0,0,0,0.35);
+}
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html { font-family: var(--font); background: var(--cream); color: var(--text); scroll-behavior: smooth; }

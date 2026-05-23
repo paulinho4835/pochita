@@ -11,6 +11,10 @@ descripcion: Soporte plegable de diseño robusto. Se dobla completamente plano y
 destacado: false
 badge: Nuevo
 imagen: /images/productos/soporte-bambulab.jpg
+imagenes:
+  - /images/productos/soporte-bambulab-2.jpg
+  - /images/productos/soporte-bambulab-3.jpg
+  - /images/productos/soporte-bambulab-4.jpg
 mensajeWhatsApp: "Hola Pochita3D! Me interesa el soporte plegable Bambulab (Bs. 30). ¿En qué color lo tienen?"
 ---
 
